@@ -36,7 +36,6 @@ public class YtDlpService {
             response.append(line);
         }
         process.waitFor();
-        System.out.println(response.toString());
         return response.toString();
 
         }catch (Exception e){

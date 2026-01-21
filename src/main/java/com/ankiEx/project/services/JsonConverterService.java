@@ -1,8 +1,8 @@
 package com.ankiEx.project.services;
 
-import com.ankiEx.project.Subtitles.Events;
-import com.ankiEx.project.Subtitles.Segs;
-import com.ankiEx.project.Subtitles.YtSubtitles;
+import com.ankiEx.project.entities.Subtitles.Events;
+import com.ankiEx.project.entities.Subtitles.Segs;
+import com.ankiEx.project.entities.Subtitles.YtSubtitles;
 import org.springframework.stereotype.Service;
 import tools.jackson.databind.ObjectMapper;
 
@@ -10,7 +10,7 @@ import java.io.File;
 
 @Service
 public class JsonConverterService {
-    public void convertJson(String json) {
+    public void convertJson() {
         ObjectMapper mapper = new ObjectMapper();
         File file = new File("./tools/subtitles.ja.json3");
         YtSubtitles s = mapper.readValue(file, YtSubtitles.class);
@@ -33,6 +33,5 @@ public class JsonConverterService {
                 }
             }
         }
-        System.out.println(s.getEvents().get(1).getSegs().get(0).getUtf8());
     }
 }
