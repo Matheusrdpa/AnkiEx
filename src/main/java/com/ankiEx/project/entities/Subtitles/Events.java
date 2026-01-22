@@ -10,7 +10,7 @@ public class Events {
     @JsonProperty("tStartMs")
     private Long tStartMs;
     @JsonProperty("dDurationMs")
-    private Long durationMs;
+    private Long dDurationMs;
     @JsonProperty("segs")
     private List<Segs> segs;
 
@@ -23,11 +23,11 @@ public class Events {
     }
 
     public Long getDurationMs() {
-        return durationMs;
+        return dDurationMs;
     }
 
     public void setDurationMs(Long durationMs) {
-        this.durationMs = durationMs;
+        this.dDurationMs = durationMs;
     }
 
     public List<Segs> getSegs() {

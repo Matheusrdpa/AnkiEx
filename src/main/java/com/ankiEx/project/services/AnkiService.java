@@ -13,7 +13,6 @@ import java.util.Map;
 
 @Service
 public class AnkiService {
-
     private RestClient restClient;
     private final ObjectMapper mapper = new ObjectMapper();
     private final DictionaryService dictionaryService;
@@ -24,12 +23,19 @@ public class AnkiService {
     }
 
     public void addNote(){
+
        Jishoresponse jishoresponse = dictionaryService.getWordData("食べる");
+
        String vocabularyKanji = jishoresponse.getData().getFirst().getJapanese().getFirst().getWord();
+
        String vocabularyFurigana = jishoresponse.getData().getFirst().getJapanese().getFirst().getReading();
+
        List<String> vocabularyEnglish = jishoresponse.getData().getFirst().getSenses().getFirst().getEnglishDefinitions();
+
        String english = String.join("/", vocabularyEnglish);
+
        List<String> partOfSpeech = jishoresponse.getData().getFirst().getSenses().getFirst().getPartsOfSpeech();
+
        String pos = String.join("/", partOfSpeech);
 
        Map<String,Object> payload = new HashMap<>();

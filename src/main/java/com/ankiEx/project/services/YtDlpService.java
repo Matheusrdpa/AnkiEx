@@ -9,10 +9,9 @@ import java.util.List;
 
 @Service
 public class YtDlpService {
-    public String executeCommands(){
+    public String executeCommands(String url, String videoId){
         try {
         List<String> commands = new ArrayList<>();
-        String url = "https://www.youtube.com/watch?v=KTquJyBBE10"; // example url that will be removed later
         commands.add("./tools/yt-dlp.exe");
         commands.add(url);
         commands.add("--write-auto-sub");
@@ -22,7 +21,7 @@ public class YtDlpService {
         commands.add("--sub-format");
         commands.add("json3");
         commands.add("-o");
-        commands.add("subtitles");
+        commands.add("./tools/" + videoId);
 
         ProcessBuilder processBuilder = new ProcessBuilder(commands);
         processBuilder.redirectErrorStream(true);
