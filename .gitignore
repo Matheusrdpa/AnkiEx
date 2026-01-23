@@ -1,3 +1,9 @@
+# Ignore sudachi dicts
+*.dic
+sudachidict-*
+system_core.dic
+system_small.dic
+
 HELP.md
 target/
 .mvn/wrapper/maven-wrapper.jar

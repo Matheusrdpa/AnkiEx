@@ -1,6 +1,7 @@
 package com.ankiEx.project.services.clipboard;
 
 import com.ankiEx.project.services.JsonConverterService;
+import com.ankiEx.project.services.MorphAnalyzerService;
 import com.ankiEx.project.services.YtDlpService;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
@@ -18,10 +19,12 @@ public class ClipBoardWatcher {
 
     private YtDlpService ytDlpService;
     private JsonConverterService jsonConverterService;
+    private MorphAnalyzerService morphAnalyzerService;
 
-    public ClipBoardWatcher(YtDlpService ytDlpService, JsonConverterService jsonConverterService) {
+    public ClipBoardWatcher(YtDlpService ytDlpService, JsonConverterService jsonConverterService, MorphAnalyzerService morphAnalyzerService) {
         this.ytDlpService = ytDlpService;
         this.jsonConverterService = jsonConverterService;
+        this.morphAnalyzerService = morphAnalyzerService;
     }
 
     private String previousText = "";
@@ -86,7 +89,9 @@ public class ClipBoardWatcher {
             time = Integer.parseInt(matcher.group(1));
         }
 
-        jsonConverterService.getSentenceAtTimeStamp(time,videoId);
+       String sentence = jsonConverterService.getSentenceAtTimeStamp(time,videoId);
+       morphAnalyzerService.analyzeSentence(sentence);
+
     }
 }
 

@@ -48,7 +48,6 @@ public class JsonConverterService {
                                     }
                                 }
                             }
-
                             String finalSentence = sb.toString().trim();
                             log.info("Sentence found: {}start: {} duration: {} end: {} targetSeconds: {}", finalSentence, start, duration, end, targetMs);
 
