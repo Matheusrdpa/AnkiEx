@@ -1,6 +1,8 @@
 package com.ankiEx.project.services;
 
 import com.ankiEx.project.entities.Dictionary.Jishoresponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -13,6 +15,7 @@ import java.util.Map;
 
 @Service
 public class AnkiService {
+    private Logger logger = LoggerFactory.getLogger(AnkiService.class);
     private RestClient restClient;
     private final ObjectMapper mapper = new ObjectMapper();
     private final DictionaryService dictionaryService;
@@ -22,13 +25,16 @@ public class AnkiService {
         this.dictionaryService = dictionaryService;
     }
 
-    public void addNote(){
+    public void addNote(String word, String sentence){
 
-       Jishoresponse jishoresponse = dictionaryService.getWordData("食べる");
-
-       String vocabularyKanji = jishoresponse.getData().getFirst().getJapanese().getFirst().getWord();
+       Jishoresponse jishoresponse = dictionaryService.getWordData(word);
 
        String vocabularyFurigana = jishoresponse.getData().getFirst().getJapanese().getFirst().getReading();
+
+       String vocabularyKanji = jishoresponse.getData().getFirst().getJapanese().getFirst().getWord();
+       if (vocabularyKanji == null || vocabularyKanji.equals("")){
+           vocabularyKanji = vocabularyFurigana;
+       }
 
        List<String> vocabularyEnglish = jishoresponse.getData().getFirst().getSenses().getFirst().getEnglishDefinitions();
 
@@ -52,9 +58,9 @@ public class AnkiService {
        fields.put("Vocabulary-Furigana", vocabularyKanji + "[" + vocabularyFurigana + "]");
        fields.put("Vocabulary-Kana", vocabularyFurigana);
        fields.put("Vocabulary-English", english);
-       fields.put("Expression", "Not yet defined");
+       fields.put("Expression", sentence);
        fields.put("Vocabulary-Pos", pos);
-       fields.put("Sentence-English", "Not Yet defined");
+       fields.put("Sentence-English", "Not Yet defined"); // translation has to be added
 
 
 
@@ -63,7 +69,7 @@ public class AnkiService {
        payload.put("params", params);
 
         if (noteAlreadyExists()){
-            System.out.println("Card already exists");
+            logger.warn("Card already exists");
             return;
         }
 
@@ -76,7 +82,7 @@ public class AnkiService {
                     .retrieve()
                     .body(String.class);
 
-            System.out.println("Anki Response: " + res);
+            logger.warn("Anki Response: " + res);
         } catch (Exception e) {
             e.printStackTrace();
         }

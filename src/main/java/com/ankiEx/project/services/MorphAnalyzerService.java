@@ -1,5 +1,7 @@
 package com.ankiEx.project.services;
 
+import com.ankiEx.project.entities.morph.AnalyzedSentence;
+import com.ankiEx.project.entities.morph.WordOption;
 import com.worksap.nlp.sudachi.Dictionary;
 import com.worksap.nlp.sudachi.DictionaryFactory;
 import com.worksap.nlp.sudachi.Morpheme;
@@ -38,35 +40,39 @@ public class MorphAnalyzerService {
     }
 
 
-    public String analyzeSentence(String sentence){
+    public AnalyzedSentence analyzeSentence(String sentence){
         List<Morpheme> tokens = tokenizer.tokenize(Tokenizer.SplitMode.C,sentence);
+        List<WordOption> wordOptions = new ArrayList<>();
         StringBuilder fullSentence = new StringBuilder();
+        StringBuilder fullSentenceRaw = new StringBuilder();
 
-        List<String> romajiTokens = new ArrayList<>();
-        for (Morpheme morpheme : tokens) {
-            String reading = kanaConverterService.toRomaji(morpheme.readingForm());
-            romajiTokens.add(reading);
-        }
 
-        for (int i = 0; i < romajiTokens.size(); i++) {
-            String current = romajiTokens.get(i);
+        for (int i = 0; i < tokens.size(); i++) {
+            Morpheme currentToken = tokens.get(i);
+            String currentRomaji = kanaConverterService.toRomaji(currentToken.readingForm());
+            String currentKanji = currentToken.surface();
+            String currentType = currentToken.partOfSpeech().get(0);
+            fullSentenceRaw.append(currentKanji);
 
-            if (i + 1 < romajiTokens.size()) {
-
-                String next = romajiTokens.get(i + 1);
-                String fusionAttempt = current + next;
+            if (i + 1 < tokens.size()) {
+                Morpheme nextToken = tokens.get(i + 1);
+                String nextRomaji = kanaConverterService.toRomaji(nextToken.readingForm());
+                String fusionAttempt = currentRomaji + nextRomaji;
 
                 if (whiteListExceptions.contains(fusionAttempt)) {
+                    String fusedKanji = currentKanji + nextToken.surface();
+                    wordOptions.add(new WordOption(fusedKanji,fusionAttempt, "Expressão"));
                     fullSentence.append(fusionAttempt).append(" ");
                     i++;
                     continue;
                 }
             }
-            fullSentence.append(current).append(" ");
+            wordOptions.add(new WordOption(currentKanji,currentRomaji, currentType));
+            fullSentence.append(currentRomaji).append(" ");
         }
 
-        logger.info("Romaji: " + fullSentence);
-        return fullSentence.toString().trim();
+        logger.info("Romaji: " + fullSentence + "Kanji: " + fullSentenceRaw);
+        return new AnalyzedSentence(fullSentence.toString().trim(),wordOptions);
     }
 
     public void loadWhiteList() {
