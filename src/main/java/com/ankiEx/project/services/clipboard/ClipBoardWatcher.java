@@ -18,6 +18,8 @@ import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -104,38 +106,34 @@ public class ClipBoardWatcher implements CommandLineRunner {
         }
 
         menu.append("-----------------------------------------------------\n");
-        menu.append("Type the word number or romaji: ");
+        menu.append("Type the word number or \na comma separated list of numbers (e.g.: 1,2,3,4)");
 
         JDialog dialog = new JDialog();
         dialog.setAlwaysOnTop(true);
         dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 
         String input = JOptionPane.showInputDialog(dialog,menu.toString(), "Anki Miner - New sentence", JOptionPane.QUESTION_MESSAGE);
+        List<Integer> inputList = Arrays.stream(input.split("[,\\s]")).filter(x -> !x.isEmpty()).map(Integer::parseInt).map(x -> x - 1).toList();
 
         if (input != null && !input.isEmpty()) {
-            treatUserChoice(input,analyzedSentence, sentence);
+            treatUserChoice(inputList,analyzedSentence, sentence);
         }else {
             logger.info("No sentence selected");
         }
         dialog.dispose();
     }
 
-    private void treatUserChoice(String input, AnalyzedSentence analyzedSentence, String sentence) {
-        input = input.toLowerCase().trim();
-
-        if (input.matches("\\d+")){
-            int index = Integer.parseInt(input) - 1;
-            if (index >= 0 && index < analyzedSentence.words().size()) {
-                WordOption chosen = analyzedSentence.words().get(index);
-                logger.info("Create card:  " + chosen.kanji() + " (" + chosen.romaji() + ")");
-                ankiService.addNote(chosen.kanji(), sentence);
-            }else {
-                logger.info("No sentence selected or invalid word/id");
-            }
-        }else {
-            logger.info("Search custom word");
+    private void treatUserChoice(List<Integer> inputList, AnalyzedSentence analyzedSentence, String sentence) {
+        for (int i = 0; i < inputList.size(); i++) {
+            int input = inputList.get(i);
+                if (input >= 0 && input < analyzedSentence.words().size()) {
+                    WordOption chosen = analyzedSentence.words().get(input);
+                    logger.info("Create card:  " + chosen.kanji() + " (" + chosen.romaji() + ")");
+                    ankiService.addNote(chosen.kanji(), sentence);
+                } else {
+                    logger.info("No sentence selected or invalid word/id");
+                }
         }
     }
-
 }
 

@@ -1,6 +1,5 @@
 package com.ankiEx.project.services;
 
-import com.ankiEx.project.entities.Dictionary.Data;
 import com.ankiEx.project.entities.Dictionary.Jishoresponse;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
