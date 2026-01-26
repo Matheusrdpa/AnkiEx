@@ -25,7 +25,7 @@ public class AnkiService {
         this.dictionaryService = dictionaryService;
     }
 
-    public void addNote(String word, String sentence){
+    public void addNote(String word, String sentence, String deckName){
 
        Jishoresponse jishoresponse = dictionaryService.getWordData(word);
 
@@ -50,7 +50,7 @@ public class AnkiService {
 
        Map<String,Object> params = new HashMap<>();
        Map<String,Object> note = new HashMap<>();
-       note.put("deckName", "New one for testing");
+       note.put("deckName", deckName);
        note.put("modelName", "Mining");
 
        Map<String,Object> fields = new HashMap<>();
@@ -61,7 +61,6 @@ public class AnkiService {
        fields.put("Expression", sentence);
        fields.put("Vocabulary-Pos", pos);
        fields.put("Sentence-English", "Not Yet defined"); // translation has to be added
-
 
 
        note.put("fields", fields);

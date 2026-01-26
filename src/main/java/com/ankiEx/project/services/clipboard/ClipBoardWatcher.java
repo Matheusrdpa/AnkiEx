@@ -31,6 +31,7 @@ public class ClipBoardWatcher implements CommandLineRunner {
     private JsonConverterService jsonConverterService;
     private MorphAnalyzerService morphAnalyzerService;
     private AnkiService ankiService;
+    private String deckName;
 
     public ClipBoardWatcher(YtDlpService ytDlpService, JsonConverterService jsonConverterService, MorphAnalyzerService morphAnalyzerService, AnkiService ankiService) {
         this.ytDlpService = ytDlpService;
@@ -45,7 +46,7 @@ public class ClipBoardWatcher implements CommandLineRunner {
     public void run(String... args) throws Exception {
         logger.info("Started watching the clipboard...");
         Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-        String previousText = "";
+        String previousText = "placeholder";
 
         while (true) {
             try {
@@ -94,32 +95,64 @@ public class ClipBoardWatcher implements CommandLineRunner {
 
     private void showSelectionWindow(String sentence, AnalyzedSentence analyzedSentence) {
         StringBuilder menu = new StringBuilder();
-        menu.append("Frase: " + sentence).append("\n");
-        menu.append("Romaji: " + analyzedSentence.fullRomaji()).append("\n");
+        menu.append("Sentence: ").append(sentence).append("\n");
+        menu.append("Romaji: ").append(analyzedSentence.fullRomaji()).append("\n");
         menu.append("-----------------------------------------------------\n");
 
         int id = 1;
-
-        for (WordOption word: analyzedSentence.words()){
-            menu.append(String.format("[%d] %s (%s)\n", id,word.kanji(),word.romaji()));
+        for (WordOption word : analyzedSentence.words()) {
+            menu.append(String.format("[%d] %s (%s)\n", id, word.kanji(), word.romaji()));
             id++;
         }
-
         menu.append("-----------------------------------------------------\n");
-        menu.append("Type the word number or \na comma separated list of numbers (e.g.: 1,2,3,4)");
+
+        JTextField numbersField = new JTextField();
+
+        JTextField deckNameBox = new JTextField(this.deckName);
+
+        Object[] message = {
+                new JTextArea(menu.toString()),
+                "-----------------------------------------------------",
+                "Type the word number or \na comma separated list of numbers (e.g.: 1,2,3,4)\n",
+                numbersField,
+                "Anki deck name:",
+                deckNameBox
+        };
 
         JDialog dialog = new JDialog();
         dialog.setAlwaysOnTop(true);
-        dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 
-        String input = JOptionPane.showInputDialog(dialog,menu.toString(), "Anki Miner - New sentence", JOptionPane.QUESTION_MESSAGE);
-        List<Integer> inputList = Arrays.stream(input.split("[,\\s]")).filter(x -> !x.isEmpty()).map(Integer::parseInt).map(x -> x - 1).toList();
+        int option = JOptionPane.showConfirmDialog(
+                dialog,
+                message,
+                "Anki Miner",
+                JOptionPane.OK_CANCEL_OPTION
+        );
 
-        if (input != null && !input.isEmpty()) {
-            treatUserChoice(inputList,analyzedSentence, sentence);
-        }else {
-            logger.info("No sentence selected");
+        if (option == JOptionPane.OK_OPTION) {
+            String deckTyped = deckNameBox.getText().trim();
+            if (!deckTyped.isEmpty()) {
+                this.deckName = deckTyped;
+            }
+
+            String input = numbersField.getText();
+            if (input != null && !input.isEmpty()) {
+                try {
+                    List<Integer> inputList = Arrays.stream(input.split("[,\\s]+"))
+                            .filter(x -> !x.isEmpty())
+                            .map(Integer::parseInt)
+                            .map(x -> x - 1)
+                            .toList();
+
+                    treatUserChoice(inputList, analyzedSentence, sentence);
+                } catch (NumberFormatException e) {
+                    logger.error("Type a number.");
+                }
+            } else {
+                logger.info("No word selected.");
+            }
         }
+
         dialog.dispose();
     }
 
@@ -129,7 +162,7 @@ public class ClipBoardWatcher implements CommandLineRunner {
                 if (input >= 0 && input < analyzedSentence.words().size()) {
                     WordOption chosen = analyzedSentence.words().get(input);
                     logger.info("Create card:  " + chosen.kanji() + " (" + chosen.romaji() + ")");
-                    ankiService.addNote(chosen.kanji(), sentence);
+                    ankiService.addNote(chosen.kanji(), sentence,deckName);
                 } else {
                     logger.info("No sentence selected or invalid word/id");
                 }
