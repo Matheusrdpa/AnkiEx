@@ -9,15 +9,12 @@ import com.ankiEx.project.services.YtDlpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
-
 import org.springframework.stereotype.Component;
 
 import javax.swing.*;
 import java.awt.*;
-
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -41,12 +38,11 @@ public class ClipBoardWatcher implements CommandLineRunner {
     }
 
 
-
     @Override
     public void run(String... args) throws Exception {
         logger.info("Started watching the clipboard...");
         Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-        String previousText = "placeholder";
+        String previousText = "";
 
         while (true) {
             try {
@@ -60,6 +56,7 @@ public class ClipBoardWatcher implements CommandLineRunner {
                 }
                 Thread.sleep(1000);
             }catch (Exception e){
+                logger.error("Error in monitoring loop");
             }
         }
     }
