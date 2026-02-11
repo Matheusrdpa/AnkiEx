@@ -1,4 +1,5 @@
 # Ignore sudachi dicts
+system-prompt.txt
 *.dic
 sudachidict-*
 system_core.dic

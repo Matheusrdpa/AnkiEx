@@ -1,31 +1,27 @@
 package com.ankiEx.project.services;
 
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 
 @Service
 public class AiService {
     private final ChatClient chatClient;
+    @Value("classpath:/system-prompt.txt")
+    private Resource systemPromptResource;
+
     public AiService(ChatClient.Builder builder){
         this.chatClient = builder.build();
     }
 
-    public String process(String text){
-        String res =  chatClient.prompt().system("""
-                    Você é um professor de idiomas especializado em japonês e ingles, então as explicações e traduçoes são sempre em ingles. responda APENAS com um json valido, não escreva nada fora do json e nao use blocos de markdown
-                    e não adicione texto antes ou depois do json
-                    Sua tarefa é:
-                    - Consertar legendas fragmentadas ou erradas que vão vir do youtube
-                    - Verificar se a frase enviada pelo usuário possui erros gramaticais. (Se a frase estiver cortada ou incompleta, ignore a parte incompleta e adicione no errors)
-                    - Se houver erros, corrija-os.
-                    - Forneça a tradução correta para o português brasileiro.
-                    - Forneça a resposta em Json com o seguinte formato:{"sentence": "...", "translation": "...", "furigana": "...","romaji": "...", "morphemes": "...","grammar_note": "..."}
-                    - Onde sentence recebe uma string com a frase original SEM FURIGANA (se for romaji, passe para kanji original) corrigida,o campo Translation tem a traducao da frase correta,o campo furigana vai ter a frase original em kanji 
-                    e ao lado dos kanjis furigana, você vai adicionar o furigana entre [], exemplo:  猫[ねこ],o campo morphemes recebe uma lista de morphemas da linguagem na frase, por mais que so tenha um item,o json precisa ser formatado como uma lista e o grammar note possui a explicação do erro (caso exista)
-                    e o romaji recebe a frase em romaji.     
-                    - O campo morphemes tem a seguinte estrutura: {"surface","reading","meaning","pos"},onde o reading vem sempre com o hiragana.
-                    """)
+    public String process(String text) throws IOException {
+        String message = systemPromptResource.getContentAsString(StandardCharsets.UTF_8);
+        String res =  chatClient.prompt().system(message)
                 .user(text)
                 .call()
                 .content();

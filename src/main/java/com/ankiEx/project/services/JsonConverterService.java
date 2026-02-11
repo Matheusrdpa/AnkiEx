@@ -15,48 +15,59 @@ public class JsonConverterService {
 
     private final Logger log = LoggerFactory.getLogger(JsonConverterService.class);
     public String getSentenceAtTimeStamp(int targetSeconds, String videoId) {
-
         long targetMs = targetSeconds * 1000L;
-        long margin = 1000L;
-
         ObjectMapper mapper = new ObjectMapper();
-        File file = new File("./tools/"+ videoId +".ja.json3");
+        File file = new File("./tools/" + videoId + ".ja.json3");
 
         if (!file.exists()) {
             log.warn("Subtitles file not found");
             return null;
         }
 
-        try{
-            YtSubtitles s = mapper.readValue(file,YtSubtitles.class);
-            if (s.getEvents() != null) {
-                for (Events e : s.getEvents()) {
-                    if (e.getSegs() != null) {
-                        long start = e.gettStartMs() - margin;
-                        Long durationObj = e.getDurationMs();
-                        long duration = (durationObj != null) ? durationObj : 3000L;
-                        long end = start + duration;
+        try {
+            YtSubtitles s = mapper.readValue(file, YtSubtitles.class);
+            if (s.getEvents() == null){
+                log.warn("Subtitles not found");
+                return null;
+            }
 
-                        if (targetMs >= start && targetMs <= end) {
-                            StringBuilder sb = new StringBuilder();
+            Events bestMatch = null;
+            long smallestDifference = Long.MAX_VALUE;
 
-                            if (e.getSegs() != null) {
-                                for (Segs segs : e.getSegs()) {
-                                    String text = segs.getUtf8();
-                                    if (text != null && !text.isBlank() && !text.equals("\n")) {
-                                        sb.append(text);
-                                    }
-                                }
-                            }
-                            String finalSentence = sb.toString().trim();
-                            log.info("Sentence found: {}start: {} duration: {} end: {} targetSeconds: {}", finalSentence, start, duration, end, targetMs);
-
-                            return finalSentence;
+            for (Events e : s.getEvents()) {
+                if (e.getSegs() != null) {
+                    StringBuilder tempContent = new StringBuilder();
+                    for (Segs se : e.getSegs()) {
+                        if (se.getUtf8() != null && !se.getUtf8().equals("\n")) {
+                            tempContent.append(se.getUtf8());
                         }
+                    }
+                    if (tempContent.toString().trim().isEmpty()) {
+                        continue;
+                    }
+
+                    long diff = Math.abs(e.gettStartMs() - targetMs);
+                    if (diff < smallestDifference) {
+                        smallestDifference = diff;
+                        bestMatch = e;
                     }
                 }
             }
-        }catch (Exception e){
+
+            if (bestMatch != null && smallestDifference < 5000L) {
+                StringBuilder sb = new StringBuilder();
+                for (Segs segs : bestMatch.getSegs()) {
+                    String text = segs.getUtf8();
+                    if (text != null && !text.isBlank() && !text.equals("\n")) {
+                        sb.append(text);
+                    }
+                }
+                String finalSentence = sb.toString().trim();
+                log.info("Best match found: {} (Diff: {}ms)", finalSentence, smallestDifference);
+                return finalSentence;
+            }
+
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;

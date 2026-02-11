@@ -23,7 +23,7 @@ public class AnkiService {
         this.restClient = restClient;
     }
 
-    public void addNote(MorphemeDto morpheme, String sentence, String deckName, String sentenceTranslation){
+    public void addNote(MorphemeDto morpheme, String sentence,String sentenceFurigana, String deckName, String sentenceTranslation){
 
        String vocabularyFurigana = morpheme.reading();
 
@@ -44,7 +44,7 @@ public class AnkiService {
 
        Map<String,Object> fields = new HashMap<>();
        fields.put("Vocabulary-Kanji", vocabularyKanji);
-       fields.put("Vocabulary-Furigana", " " + vocabularyKanji + "[" + vocabularyFurigana + "]");
+       fields.put("Vocabulary-Furigana", " " + sentenceFurigana);
        fields.put("Vocabulary-Kana", vocabularyFurigana);
        fields.put("Vocabulary-English", vocabularyEnglish);
        fields.put("Expression", sentence);

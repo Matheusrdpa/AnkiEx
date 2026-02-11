@@ -16,6 +16,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -63,7 +64,7 @@ public class ClipBoardWatcher implements CommandLineRunner {
         }
     }
 
-    private void processContent(String url) {
+    private void processContent(String url) throws IOException {
         String regex = "^(?:https?://)?(?:www\\.)?(?:youtube\\.com/watch\\?v=|youtu\\.be/)([a-zA-Z0-9_-]{11}).*";
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(url);
@@ -163,7 +164,7 @@ public class ClipBoardWatcher implements CommandLineRunner {
                 if (input >= 0 && input < aiResponse.morphemes().size()) {
                     MorphemeDto chosen = aiResponse.morphemes().get(input);
                     logger.info("Create card:  " + chosen.surface() + " (" + chosen.reading() + ")");
-                    ankiService.addNote(chosen,aiResponse.sentence(),deckName,aiResponse.translation());
+                    ankiService.addNote(chosen,aiResponse.sentence(),aiResponse.furigana(),deckName,aiResponse.translation());
                 } else {
                     logger.info("No sentence selected or invalid word/id");
                 }
