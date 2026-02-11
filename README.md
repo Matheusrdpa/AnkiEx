@@ -6,22 +6,22 @@
 
 **AnkiEx** é uma ferramenta desktop desenvolvida em Java que automatiza o processo de "mineração" de vocabulário japonês (Sentence Mining) diretamente de vídeos do YouTube para o Anki.
 
-Diferente de extensões de navegador, o AnkiEx monitora sua área de transferência e orquestra downloads, processamento de linguagem natural (NLP) e criação de cards em background.
+Diferente de extensões de navegador, o AnkiEx monitora sua área de transferência, utiliza Google Vertex AI (Gemini 2.0 Flash) para orquestrar e corrigir legendas fragmentadas, e cria cards completos com furigana e tradução automática.
 
 ## 🚀 Funcionalidades
 
 - **Monitoramento de Clipboard:** Detecta automaticamente links do YouTube copiados (`Ctrl+C`).
 - **Sincronização de Legendas:** As legendas do video vão ser baixadas e a frase vai ser extraida do timestamp em que estiver no link.
-- **Análise Morfológica (NLP):** Utiliza **Sudachi** para quebrar frases japonesas em palavras e identificar classes gramaticais.
-- **Dicionário Automático:** Busca definições, leituras (Furigana) e traduções via API do Jisho.org.
+- **IA como Orquestrador:** Corrige frases cortadas do YouTube, gera traduções para o Inglês e extrai morfemas com significados contextualizados.
 - **Integração com Anki:** Cria cards automaticamente no seu deck preferido via AnkiConnect.
 - **Interface Gráfica (Swing):** Pop-up flutuante para seleção de palavras e configuração de Deck.
+- **Furigana Automático:** Gera leitura de Kanjis no formato padrão do Anki (漢字[かんじ]).
 
 ## 🛠️ Tecnologias Utilizadas
 
 - **Core:** Java 17, Spring Boot 3
 - **GUI:** Java Swing
-- **NLP:** Sudachi (Java)
+- **Artificial Intelligence:** IA com Vertex AI: Utiliza o modelo gemini-2.0-flash para corrigir legendas, gerar traduções e extrair morfemas contextualizados
 - **External Tools:** yt-dlp (Download de legendas), AnkiConnect (Integração)
 - **Build:** Maven
 
@@ -30,34 +30,40 @@ Diferente de extensões de navegador, o AnkiEx monitora sua área de transferên
 Para rodar o projeto, você precisará configurar o ambiente:
 
 1. **Java JDK 17** ou superior instalado.
-2. **Anki** instalado com o add-on **AnkiConnect** (Código: `2055492159`).
+2.  **Google Cloud Platform (Vertex AI):**
+   -  Um projeto ativo no GCP com a API Vertex AI habilitada.
+   -  Uma Service Account com as permissões necessárias e seu arquivo de credenciais JSON.
+3. **Anki** instalado com o add-on **AnkiConnect** (Código: `2055492159`).
    - *Nota:* Certifique-se de que o AnkiConnect está configurado para aceitar conexões locais (padrão porta 8765).
-3. **Dependências na pasta raiz:**
+4. **Dependências na pasta raiz:**
    O projeto espera a seguinte estrutura de arquivos para funcionar:
 
    ```text
    AnkiEx/
    ├── tools/
    │   ├── yt-dlp.exe       # Executável para baixar legendas
-   │   └── whitelist.txt    # Lista de exceções para o tokenizador
-   ├── system_core.dic      # Dicionário do Sudachi (Necessário baixar)
    └── src/...
-**Importante:** Você precisa baixar o system_core.dic que pode ser encontrado no [github](https://github.com/WorksApplications/SudachiDict?tab=readme-ov-file) (dicionário do Sudachi) e colocá-lo na raiz do projeto.
-
+   
 ## 🏃‍♂️ Como Rodar
 
-1. Clone o repositório
+1. Configure as Variáveis de Ambiente:
+O projeto utiliza injeção de dependência para ler as credenciais do GCP. Defina as seguintes variáveis no seu sistema:
+
+   GCP_PROJECT_ID: O ID do seu projeto no Google Cloud.
+
+   GCP_CREDENTIALS_PATH: O caminho completo para o arquivo JSON da sua Service Account (ex: C:/keys/projeto-anki.json).
+
+2. Clone o repositório
 ```
 git clone https://github.com/matheusrdpa/ankiex.git
 cd ankiex 
 ```
-2. Configure as ferramentas.
+3. Configure as ferramentas.
    - *Nota:* Verifique se o yt-dlp.exe está dentro da pasta tools/.
-   - *Nota:* Coloque o system_core.dic na raiz do projeto.
 
-3. Abra o Anki: O Anki precisa estar aberto para receber os cards (o plugin AnkiConnect deve estar ativo).
+4. Abra o Anki: O Anki precisa estar aberto para receber os cards (o plugin AnkiConnect deve estar ativo).
 
-4. Execute a aplicação:
+5. Execute a aplicação:
 ```
 ./mvnw spring-boot:run
 ```
@@ -70,12 +76,14 @@ cd ankiex
 3. Quando ouvir uma frase que quer aprender, copie a URL do vídeo com o tempo atual (Clique com o botão direito no vídeo → "Copiar URL no tempo atual" ou Ctrl+C na barra de endereço se já tiver o parâmetro &t=).
 
 4. O AnkiEx detectará o link e abrirá um popup flutuante com a frase detectada e a seguinte formatação:.
-   <img width="383" height="422" alt="image" src="https://github.com/user-attachments/assets/328e8d9e-389f-4dd8-9235-01092bf2634a" />
+   <img width="368" height="403" alt="image" src="https://github.com/user-attachments/assets/6e909df0-e2c0-4385-9433-5762a05a707b" />
+
 
 6. Digite o nome exato do Deck (ex: Mining) e o Número da palavra que deseja aprender.
 
 Pronto! O card foi criado no Anki com Frase, Definição e Leitura automaticamente dessa forma: 
-<img width="669" height="602" alt="image" src="https://github.com/user-attachments/assets/820816ca-afba-483b-b823-205179041ab3" />
+<img width="669" height="601" alt="image" src="https://github.com/user-attachments/assets/88ce4914-b8d5-4885-baf6-712ed514d20b" />
+
 
 
 ## Estrutura do projeto
@@ -83,6 +91,9 @@ Pronto! O card foi criado no Anki com Frase, Definição e Leitura automaticamen
 
 ```YtDlpService.java``` Gerencia processos externos (ProcessBuilder) para download e sincronização de legendas.
 
-```MorphAnalyzerService.java``` Integração com o Sudachi NLP para análise morfológica e tokenização.
+```AiService.java``` O cérebro do projeto. Envia a legenda bruta para a IA e recebe um JSON estruturado com tudo o que o card precisa.
 
 ```AnkiService.java``` Cliente HTTP para comunicar com a API local do Anki (JSON-RPC).
+
+```JsonConverterService.java```Filtra os arquivos .json3 do YouTube usando busca por proximidade temporal.
+
