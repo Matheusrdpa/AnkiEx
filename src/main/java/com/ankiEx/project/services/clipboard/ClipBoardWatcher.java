@@ -3,11 +3,8 @@ package com.ankiEx.project.services.clipboard;
 import com.ankiEx.project.entities.ai.AiResponse;
 import com.ankiEx.project.entities.ai.MorphemeDto;
 import com.ankiEx.project.services.AiService;
-import com.ankiEx.project.entities.morph.AnalyzedSentence;
-import com.ankiEx.project.entities.morph.WordOption;
 import com.ankiEx.project.services.AnkiService;
 import com.ankiEx.project.services.JsonConverterService;
-import com.ankiEx.project.services.MorphAnalyzerService;
 import com.ankiEx.project.services.YtDlpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,16 +27,14 @@ public class ClipBoardWatcher implements CommandLineRunner {
     private Logger logger = LoggerFactory.getLogger(ClipBoardWatcher.class);
     private YtDlpService ytDlpService;
     private JsonConverterService jsonConverterService;
-    private MorphAnalyzerService morphAnalyzerService;
     private AnkiService ankiService;
     private String deckName;
     private AiService aiService;
     private ObjectMapper objectMapper;
 
-    public ClipBoardWatcher(ObjectMapper objectMapper,YtDlpService ytDlpService, JsonConverterService jsonConverterService, MorphAnalyzerService morphAnalyzerService, AnkiService ankiService, AiService aiService) {
+    public ClipBoardWatcher(ObjectMapper objectMapper,YtDlpService ytDlpService, JsonConverterService jsonConverterService, AnkiService ankiService, AiService aiService) {
         this.ytDlpService = ytDlpService;
         this.jsonConverterService = jsonConverterService;
-        this.morphAnalyzerService = morphAnalyzerService;
         this.ankiService = ankiService;
         this.aiService = aiService;
         this.objectMapper = objectMapper;

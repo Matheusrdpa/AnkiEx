@@ -1,6 +1,5 @@
 package com.ankiEx.project.services;
 
-import com.ankiEx.project.entities.Dictionary.Jishoresponse;
 import com.ankiEx.project.entities.ai.MorphemeDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,11 +18,9 @@ public class AnkiService {
     private Logger logger = LoggerFactory.getLogger(AnkiService.class);
     private RestClient restClient;
     private final ObjectMapper mapper = new ObjectMapper();
-    private final DictionaryService dictionaryService;
 
-    public AnkiService(@Qualifier("ankiClient") RestClient restClient, DictionaryService dictionaryService) {
+    public AnkiService(@Qualifier("ankiClient") RestClient restClient) {
         this.restClient = restClient;
-        this.dictionaryService = dictionaryService;
     }
 
     public void addNote(MorphemeDto morpheme, String sentence, String deckName, String sentenceTranslation){
@@ -47,7 +44,7 @@ public class AnkiService {
 
        Map<String,Object> fields = new HashMap<>();
        fields.put("Vocabulary-Kanji", vocabularyKanji);
-       fields.put("Vocabulary-Furigana", vocabularyKanji + "[" + vocabularyFurigana + "]");
+       fields.put("Vocabulary-Furigana", " " + vocabularyKanji + "[" + vocabularyFurigana + "]");
        fields.put("Vocabulary-Kana", vocabularyFurigana);
        fields.put("Vocabulary-English", vocabularyEnglish);
        fields.put("Expression", sentence);
