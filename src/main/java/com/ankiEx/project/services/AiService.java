@@ -1,23 +1,17 @@
-package com.ankiEx.project.controllers;
+package com.ankiEx.project.services;
 
 import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Service;
 
-//Controller being used purely for data visualization
 
-@RestController
-@RequestMapping("/ai")
-public class AiController {
+@Service
+public class AiService {
     private final ChatClient chatClient;
-    public AiController(ChatClient.Builder builder){
+    public AiService(ChatClient.Builder builder){
         this.chatClient = builder.build();
     }
 
-    @GetMapping("/process")
-    public String process(@RequestParam String text){
+    public String process(String text){
         String res =  chatClient.prompt().system("""
                     Você é um professor de idiomas especializado em japonês e português. responda APENAS com um json valido, não escreva nada fora do json e nao use blocos de markdown
                     e não adicione texto antes ou depois do json

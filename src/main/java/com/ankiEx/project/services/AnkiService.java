@@ -1,6 +1,7 @@
 package com.ankiEx.project.services;
 
 import com.ankiEx.project.entities.Dictionary.Jishoresponse;
+import com.ankiEx.project.entities.ai.MorphemeDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -25,24 +26,15 @@ public class AnkiService {
         this.dictionaryService = dictionaryService;
     }
 
-    public void addNote(String word, String sentence, String deckName){
+    public void addNote(MorphemeDto morpheme, String sentence, String deckName, String sentenceTranslation){
 
-       Jishoresponse jishoresponse = dictionaryService.getWordData(word);
+       String vocabularyFurigana = morpheme.reading();
 
-       String vocabularyFurigana = jishoresponse.getData().getFirst().getJapanese().getFirst().getReading();
+       String vocabularyKanji = morpheme.surface();
 
-       String vocabularyKanji = jishoresponse.getData().getFirst().getJapanese().getFirst().getWord();
-       if (vocabularyKanji == null || vocabularyKanji.equals("")){
-           vocabularyKanji = vocabularyFurigana;
-       }
+       String vocabularyEnglish = morpheme.meaning();
 
-       List<String> vocabularyEnglish = jishoresponse.getData().getFirst().getSenses().getFirst().getEnglishDefinitions();
-
-       String english = String.join("/", vocabularyEnglish);
-
-       List<String> partOfSpeech = jishoresponse.getData().getFirst().getSenses().getFirst().getPartsOfSpeech();
-
-       String pos = String.join("/", partOfSpeech);
+       String pos = morpheme.pos();
 
        Map<String,Object> payload = new HashMap<>();
        payload.put("action", "addNote");
@@ -57,17 +49,16 @@ public class AnkiService {
        fields.put("Vocabulary-Kanji", vocabularyKanji);
        fields.put("Vocabulary-Furigana", vocabularyKanji + "[" + vocabularyFurigana + "]");
        fields.put("Vocabulary-Kana", vocabularyFurigana);
-       fields.put("Vocabulary-English", english);
+       fields.put("Vocabulary-English", vocabularyEnglish);
        fields.put("Expression", sentence);
        fields.put("Vocabulary-Pos", pos);
-       fields.put("Sentence-English", "Not Yet defined"); // translation has to be added
-
+       fields.put("Sentence-English", sentenceTranslation);
 
        note.put("fields", fields);
        params.put("note", note);
        payload.put("params", params);
 
-        if (noteAlreadyExists()){
+        if (noteAlreadyExists(deckName,vocabularyKanji)){
             logger.warn("Card already exists");
             return;
         }
@@ -87,12 +78,13 @@ public class AnkiService {
         }
     }
 
-    public boolean noteAlreadyExists(){
+    public boolean noteAlreadyExists(String deckName,String word){
         Map<String,Object> payload = new HashMap<>();
         payload.put("action", "findNotes");
         payload.put("version", 6);
         Map<String,Object> params = new HashMap<>();
-        params.put("query", "\"deck:New one for testing\" \"Vocabulary-Kanji:Tested\"");
+        String query = "deck:\"" + deckName + "\" \"Vocabulary-Kanji:" + word + "\"";
+        params.put("query", query);
         payload.put("params", params);
 
         String json = mapper.writeValueAsString(payload);
