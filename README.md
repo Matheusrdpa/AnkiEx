@@ -35,6 +35,9 @@ Para rodar o projeto, você precisará configurar o ambiente:
    -  Uma Service Account com as permissões necessárias e seu arquivo de credenciais JSON.
 3. **Anki** instalado com o add-on **AnkiConnect** (Código: `2055492159`).
    - *Nota:* Certifique-se de que o AnkiConnect está configurado para aceitar conexões locais (padrão porta 8765).
+   - *Nota:* _No momento_ é **NECESSÁRIO** que você tenha um tipo de nota chamado "Mining" (case sensitive) com os seguintes campos:
+   - <img width="569" height="470" alt="image" src="https://github.com/user-attachments/assets/212a3ba5-4309-4e1d-8383-739715751e11" />
+
 4. **Dependências na pasta raiz:**
    O projeto espera a seguinte estrutura de arquivos para funcionar:
 
