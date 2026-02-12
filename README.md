@@ -18,12 +18,9 @@ Este projeto é um showcase de **Backend Engineering**.
 * **GUI (Electron/Tailwind):** A interface gráfica foi gerada totalmente com o uso de **Inteligência Artificial** (LLMs). O objetivo foi criar um cliente visual moderno apenas para consumir a API Java, permitindo que meu foco permanecesse na arquitetura, performance e regras de negócio do servidor mas que continuasse agradável para o usuário.
 
 ## Funcionalidades
-
-- **Monitoramento de Clipboard:** Detecta automaticamente links do YouTube copiados (`Ctrl+C`).
 - **Sincronização de Legendas:** As legendas do video vão ser baixadas e a frase vai ser extraida do timestamp em que estiver no link.
 - **IA como Orquestrador:** Corrige frases cortadas do YouTube, gera traduções para o Inglês e extrai morfemas com significados contextualizados.
 - **Integração com Anki:** Cria cards automaticamente no seu deck preferido via AnkiConnect.
-- **Interface Gráfica (Swing):** Pop-up flutuante para seleção de palavras e configuração de Deck.
 - **Furigana Automático:** Gera leitura de Kanjis no formato padrão do Anki (漢字[かんじ]).
 
 ## Tecnologias Utilizadas
@@ -84,7 +81,11 @@ npm install
 - e depois:
 ```
 npm start
-``` 
+```
+- Para iniciar o java
+```
+./mvnw spring-boot:run
+```
 
 ## Como Usar
 1. Com o AnkiEx rodando e o Anki aberto:
