@@ -4,6 +4,8 @@
 ![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.0-6DB33F?style=for-the-badge&logo=spring-boot&logoColor=white)
 ![Anki](https://img.shields.io/badge/Anki-Connect-blue?style=for-the-badge)
 
+<img width="1031" height="751" alt="image" src="https://github.com/user-attachments/assets/5615fb07-eecc-42f5-b62c-cc7bbeceba3e" />
+
 **AnkiEx** é uma ferramenta desktop desenvolvida em Java que automatiza o processo de "mineração" de vocabulário japonês (Sentence Mining) diretamente de vídeos do YouTube para o Anki.
 
 Diferente de extensões de navegador, o AnkiEx monitora sua área de transferência, utiliza Google Vertex AI (Gemini 2.0 Flash) para orquestrar e corrigir legendas fragmentadas, e cria cards completos com furigana e tradução automática.
