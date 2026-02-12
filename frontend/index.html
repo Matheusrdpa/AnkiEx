@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .titlebar { -webkit-user-select: none; -webkit-app-region: drag; }
+        .no-drag { -webkit-app-region: no-drag; }
+        .japanese-font { font-family: 'Yu Mincho', 'MS Mincho', serif; }
+        .word-chip:hover { transform: translateY(-2px); transition: all 0.2s; }
+        
+        /* Scrollbar discreta */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0f0f0f; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+    </style>
+</head>
+<body class="bg-[#0f0f0f] text-gray-300 h-screen flex flex-col overflow-hidden border border-gray-800 rounded-lg">
+
+<div class="titlebar flex items-center justify-between bg-[#181818] h-8 border-b border-gray-800 relative">
+
+    <div class="pl-4 z-10">
+    </div>
+
+    <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+        <div class="text-[10px] font-bold uppercase tracking-widest text-gray-500 font-sans">
+            AnkiEx
+        </div>
+    </div>
+
+    <div class="no-drag flex h-full font-sans z-10">
+        <button onclick="ipcRenderer.send('minimize-app')" class="px-4 hover:bg-[#282828] text-xs">─</button>
+        <button onclick="ipcRenderer.send('close-app')" class="px-4 hover:bg-red-600 text-lg">&times;</button>
+    </div>
+</div>
+
+    <div class="flex flex-1 overflow-hidden">
+        <aside class="w-20 bg-[#121212] flex flex-col items-center py-6 border-r border-gray-800 space-y-8">
+            <div class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-xl shadow-inner cursor-default">🎴</div>
+            <nav class="flex flex-col space-y-6">
+            </nav>
+        </aside>
+
+        <main class="flex-1 flex flex-col bg-[#0f0f0f] p-10 items-center overflow-y-auto">
+            
+            <div class="max-w-3xl w-full space-y-12">
+                
+                <section class="relative w-full group">
+                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <span class="text-gray-600 group-focus-within:text-blue-500 transition-colors">🔗</span>
+                    </div>
+                    <input type="text" id="link-input"
+                           class="w-full bg-[#141414] border border-gray-800 text-gray-200 text-sm rounded-xl focus:ring-1 focus:ring-blue-500 focus:border-blue-500 block w-full pl-12 p-4 transition-all placeholder-gray-600 shadow-inner" 
+                           placeholder="Youtube link with timestamp...">
+                    <button onclick="processarLink()" class="absolute right-2.5 top-2.5 bg-[#1e1e1e] hover:bg-blue-600 text-gray-400 hover:text-white border border-gray-700 hover:border-blue-500 font-bold rounded-lg text-[10px] uppercase tracking-wider px-4 py-2 transition-all">
+                        Get phrase
+                    </button>
+                </section>
+
+                <section class="text-center space-y-4">
+                    <span class="text-[10px] uppercase tracking-[0.3em] text-gray-600 font-bold">Original Sentence</span>
+                    <h2 id="sentence-display" class="japanese-font text-5xl text-white leading-relaxed tracking-wide">
+                        君の<span class="text-blue-400">名前</span>は。
+                    </h2>
+                    <p id="translation-display" class="text-gray-500 italic font-serif">"Qual é o seu nome?"</p>
+                </section>
+
+                <hr class="border-gray-800 w-1/4 mx-auto">
+
+                <section class="space-y-6">
+                    <div class="flex justify-between items-end">
+                        <span class="text-[10px] uppercase tracking-[0.3em] text-gray-600 font-bold">Word Analysis</span>
+                        <span class="text-[10px] text-gray-500">Clique na palavra alvo</span>
+                    </div>
+
+                    <div id="container-palavras" class="flex flex-wrap gap-3 justify-center bg-[#141414] p-8 rounded-2xl border border-gray-800 shadow-inner min-h-[100px]">
+                        <button class="word-chip px-5 py-3 bg-[#1e1e1e] border border-gray-700 rounded-xl text-xl text-gray-300">君</button>
+                        <button class="word-chip px-5 py-3 bg-[#1e1e1e] border border-gray-700 rounded-xl text-xl text-gray-300">の</button>
+                        <button class="word-chip px-5 py-3 bg-[#1e1e1e] border border-blue-500 text-blue-400 ring-2 ring-blue-500/20 rounded-xl text-xl">名前</button>
+                        <button class="word-chip px-5 py-3 bg-[#1e1e1e] border border-gray-700 rounded-xl text-xl text-gray-300">は</button>
+                    </div>
+                </section>
+
+                <section class="grid grid-cols-3 gap-6 pt-2">
+                    <div class="col-span-2 space-y-2">
+                        <label class="text-[10px] uppercase tracking-widest text-gray-600 font-bold ml-2">Anki Deck Name</label>
+                        <input type="text" id="deck-name" placeholder="Ex: Minna no Nihongo"
+                               class="w-full bg-[#181818] border border-gray-800 rounded-xl py-4 px-6 text-sm focus:outline-none focus:border-gray-500 focus:ring-1 focus:ring-gray-500 transition-all text-gray-200 placeholder-gray-600">
+                    </div>
+                    
+                    <div class="flex items-end">
+                        <button onclick="salvarCardNoAnki()" class="w-full bg-white text-black font-bold py-4 rounded-xl hover:bg-gray-200 transition-all active:scale-95 shadow-lg flex items-center justify-center gap-2">
+                            <span>Add to Anki</span>
+                            <span class="text-lg">➔</span>
+                        </button>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <script src="./src/renderer.js"></script>
+</body>
+</html>
