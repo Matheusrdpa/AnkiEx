@@ -37,8 +37,8 @@ Para rodar o projeto, você precisará configurar o ambiente:
    - *Nota:* Certifique-se de que o AnkiConnect está configurado para aceitar conexões locais (padrão porta 8765).
    - *Nota:* _No momento_ é **NECESSÁRIO** que você tenha um tipo de nota chamado "Mining" (case sensitive) com os seguintes campos:
    - <img width="569" height="470" alt="image" src="https://github.com/user-attachments/assets/212a3ba5-4309-4e1d-8383-739715751e11" />
-
-4. **Dependências na pasta raiz:**
+   
+5. **Dependências na pasta raiz:**
    O projeto espera a seguinte estrutura de arquivos para funcionar:
 
    ```text
@@ -78,20 +78,24 @@ cd ankiex
 
 3. Quando ouvir uma frase que quer aprender, copie a URL do vídeo com o tempo atual (Clique com o botão direito no vídeo → "Copiar URL no tempo atual" ou Ctrl+C na barra de endereço se já tiver o parâmetro &t=).
 
-4. O AnkiEx detectará o link e abrirá um popup flutuante com a frase detectada e a seguinte formatação:.
-   <img width="368" height="403" alt="image" src="https://github.com/user-attachments/assets/6e909df0-e2c0-4385-9433-5762a05a707b" />
+4. Cole o link copiado no campo na parte superior:
+  <img width="1031" height="751" alt="image" src="https://github.com/user-attachments/assets/5615fb07-eecc-42f5-b62c-cc7bbeceba3e" />
 
-
-6. Digite o nome exato do Deck (ex: Mining) e o Número da palavra que deseja aprender.
+6. Digite o nome exato do Deck (ex: Minna no Nihongo) (Case sensitive), clique na palavra que deseja aprender e depois em "Add to anki".
 
 Pronto! O card foi criado no Anki com Frase, Definição e Leitura automaticamente dessa forma: 
 <img width="669" height="601" alt="image" src="https://github.com/user-attachments/assets/88ce4914-b8d5-4885-baf6-712ed514d20b" />
 
+- **ATENÇÃO** Para o card ser criado exatamente com a formatação acima, você precisa configurar seu card da mesma forma.
+- Abra o anki, no menu superior, selecione Ferramentas → Gerenciar tipos de notas → Selecione o tipo Mining (Se não possuir ainda, crie um) → Cartões. E deixe assim:
+-  ## Frente:  <img width="1116" height="678" alt="image" src="https://github.com/user-attachments/assets/02c42a62-a306-45d0-95db-6f5447c7a99e" />
+- ## Verso: <img width="1116" height="678" alt="image" src="https://github.com/user-attachments/assets/6680837e-6a68-4065-bcfa-aee09608fc72" />
+
+
+
 
 
 ## Estrutura do projeto
-```ClipBoardWatcher.java``` Thread Daemon que monitora a área de transferência do SO em tempo real.
-
 ```YtDlpService.java``` Gerencia processos externos (ProcessBuilder) para download e sincronização de legendas.
 
 ```AiService.java``` O cérebro do projeto. Envia a legenda bruta para a IA e recebe um JSON estruturado com tudo o que o card precisa.
