@@ -10,7 +10,14 @@
 
 Diferente de extensões de navegador, o AnkiEx monitora sua área de transferência, utiliza Google Vertex AI (Gemini 2.0 Flash) para orquestrar e corrigir legendas fragmentadas, e cria cards completos com furigana e tradução automática.
 
-## 🚀 Funcionalidades
+## ⚠️ Nota sobre o Desenvolvimento
+
+Este projeto é um showcase de **Backend Engineering**.
+
+* **Backend (Java/Spring):** Desenvolvido por mim para orquestrar a lógica de mineração, processamento de legendas e integração com o Anki.
+* **GUI (Electron/Tailwind):** A interface gráfica foi gerada totalmente com o uso de **Inteligência Artificial** (LLMs). O objetivo foi criar um cliente visual moderno apenas para consumir a API Java, permitindo que meu foco permanecesse na arquitetura, performance e regras de negócio do servidor mas que continuasse agradável para o usuário.
+
+## Funcionalidades
 
 - **Monitoramento de Clipboard:** Detecta automaticamente links do YouTube copiados (`Ctrl+C`).
 - **Sincronização de Legendas:** As legendas do video vão ser baixadas e a frase vai ser extraida do timestamp em que estiver no link.
@@ -19,15 +26,16 @@ Diferente de extensões de navegador, o AnkiEx monitora sua área de transferên
 - **Interface Gráfica (Swing):** Pop-up flutuante para seleção de palavras e configuração de Deck.
 - **Furigana Automático:** Gera leitura de Kanjis no formato padrão do Anki (漢字[かんじ]).
 
-## 🛠️ Tecnologias Utilizadas
+## Tecnologias Utilizadas
 
 - **Core:** Java 17, Spring Boot 3
-- **GUI:** Java Swing
 - **Artificial Intelligence:** IA com Vertex AI: Utiliza o modelo gemini-2.0-flash para corrigir legendas, gerar traduções e extrair morfemas contextualizados
 - **External Tools:** yt-dlp (Download de legendas), AnkiConnect (Integração)
 - **Build:** Maven
+- **GUI (Interface Auxiliar):**
+* Electron & TailwindCSS *(Gerados via IA para visualização)*
 
-## ⚙️ Pré-requisitos
+## Pré-requisitos
 
 Para rodar o projeto, você precisará configurar o ambiente:
 
@@ -49,7 +57,7 @@ Para rodar o projeto, você precisará configurar o ambiente:
    │   ├── yt-dlp.exe       # Executável para baixar legendas
    └── src/...
    
-## 🏃‍♂️ Como Rodar
+## Como Rodar
 
 1. Configure as Variáveis de Ambiente:
 O projeto utiliza injeção de dependência para ler as credenciais do GCP. Defina as seguintes variáveis no seu sistema:
@@ -68,10 +76,15 @@ cd ankiex
 
 4. Abra o Anki: O Anki precisa estar aberto para receber os cards (o plugin AnkiConnect deve estar ativo).
 
-5. Execute a aplicação:
+5. Instale as dependencias e execute a aplicação:
 ```
-./mvnw spring-boot:run
+cd frontend
+npm install
 ```
+- e depois:
+```
+npm start
+``` 
 
 ## Como Usar
 1. Com o AnkiEx rodando e o Anki aberto:
